@@ -6,7 +6,6 @@ export interface TradeConfig {
 }
 
 export interface TradeEntry {
-  entryPrice: string;
   closePrice: string | null;
 }
 
@@ -29,6 +28,7 @@ export interface SavedOperation {
   month: number;
   day: number;
   capital: number;
+  startingPrice: number;
   trades: SavedTrade[];
   entryWeightedAvg: number;
   closeWeightedAvg: number;

@@ -5,17 +5,8 @@ import { sanitizeDecimalInput } from '../utils/sanitize';
 
 export function useTradeState() {
   const [trades, setTrades] = useState<TradeEntry[]>([]);
-  const entryRefs = useRef<(HTMLInputElement | null)[]>([]);
   const closeRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const prevTradesLen = useRef(0);
   const prevCloseCount = useRef(0);
-
-  useLayoutEffect(() => {
-    if (trades.length > prevTradesLen.current) {
-      entryRefs.current[trades.length - 1]?.focus();
-    }
-    prevTradesLen.current = trades.length;
-  }, [trades.length]);
 
   useLayoutEffect(() => {
     const closeCount = trades.filter(t => t.closePrice !== null && t.closePrice !== '').length;
@@ -32,18 +23,8 @@ export function useTradeState() {
 
   const handleAddRow = () => {
     if (trades.length < MAX_TRADES) {
-      setTrades([...trades, { entryPrice: '', closePrice: '' }]);
+      setTrades([...trades, { closePrice: '' }]);
     }
-  };
-
-  const handleEntryChange = (index: number, text: string) => {
-    const cleaned = sanitizeDecimalInput(text);
-    if (cleaned === null) return;
-    setTrades(prev => {
-      const next = [...prev];
-      next[index] = { ...next[index], entryPrice: cleaned };
-      return next;
-    });
   };
 
   const handleCloseChange = (index: number, text: string) => {
@@ -75,14 +56,11 @@ export function useTradeState() {
     trades,
     entryCount,
     closeCount,
-    entryRefs,
     closeRefs,
     handleAddRow,
-    handleEntryChange,
     handleCloseChange,
     handleDeleteEntry,
     handleDeleteClose,
     canAddRow: entryCount < MAX_TRADES,
-    canAddClose: entryCount < MAX_TRADES,
   };
 }

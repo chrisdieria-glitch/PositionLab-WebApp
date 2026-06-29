@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Header from '../components/Header';
-import CapitalInput from '../components/CapitalInput';
+import NumericField from '../components/NumericField';
 import EmptyState from '../components/EmptyState';
 import TradeBreakdown from '../components/TradeBreakdown';
 import DividerBar from '../components/DividerBar';
@@ -11,6 +11,7 @@ import SaveButton from '../components/SaveButton';
 import { formatCurrency } from '../utils/format';
 import { TRADES } from '../constants/trades';
 import { saveOperation } from '../storage/journalStorage';
+import { calcEntryPrice } from '../utils/calculations';
 import { useCalculator } from '../context/CalculatorContext';
 
 interface CalculatorPageProps {
@@ -22,21 +23,29 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     capital,
     isCapitalLocked,
     showConfirmModal,
-    showSaveConfirm,
     capitalTimerRef,
     handleCapitalChange,
     handleCapitalPress,
     handleConfirmEdit,
     handleCancelEdit,
+
+    startingPrice,
+    isStartingPriceLocked,
+    showStartingPriceConfirm,
+    handleStartingPriceChange,
+    handleStartingPricePress,
+    handleStartingPriceConfirm,
+    handleStartingPriceCancel,
+
+    showSaveConfirm,
     handleSavePress,
     handleSaveCancel,
     setShowSaveConfirm,
+
     trades,
     closeCount,
-    entryRefs,
     closeRefs,
     handleAddRow,
-    handleEntryChange,
     handleCloseChange,
     handleDeleteEntry,
     handleDeleteClose,
@@ -51,10 +60,11 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
       month: now.getMonth(),
       day: now.getDate(),
       capital: capitalNum,
+      startingPrice: startingPriceNum,
       trades: trades.map((t, i) => ({
         label: TRADES[i].label,
         percent: TRADES[i].percent,
-        entryPrice: t.entryPrice !== '' ? parseFloat(t.entryPrice) : null,
+        entryPrice: calcEntryPrice(startingPriceNum, TRADES[i].bajada),
         closePrice: t.closePrice !== '' && t.closePrice !== null ? parseFloat(t.closePrice) : null,
       })),
       entryWeightedAvg,
@@ -78,10 +88,15 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
   const capitalNum = parseFloat(capital);
   const hasValidCapital = !isNaN(capitalNum) && capitalNum > 0;
 
+  const startingPriceNum = parseFloat(startingPrice);
+  const hasValidStartingPrice = !isNaN(startingPriceNum) && startingPriceNum > 0;
+
+  const canShowContent = hasValidCapital && hasValidStartingPrice;
+
   const profits = trades.map((trade, i) => {
-    const entry = parseFloat(trade.entryPrice);
+    const entry = calcEntryPrice(startingPriceNum, TRADES[i].bajada);
     const close = parseFloat(trade.closePrice ?? '');
-    if (isNaN(entry) || entry <= 0 || isNaN(close) || close <= 0) return null;
+    if (!hasValidStartingPrice || isNaN(entry) || entry <= 0 || isNaN(close) || close <= 0) return null;
     const allocated = (capitalNum * TRADES[i].percent) / 100;
     const quantity = allocated / entry;
     const profit = (close - entry) * quantity;
@@ -102,7 +117,8 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     let sum = 0;
     let totalWeight = 0;
     for (let i = 0; i < trades.length; i++) {
-      const price = parseFloat(trades[i].entryPrice);
+      if (!hasValidStartingPrice) break;
+      const price = calcEntryPrice(startingPriceNum, TRADES[i].bajada);
       if (!isNaN(price) && price > 0) {
         sum += price * TRADES[i].percent;
         totalWeight += TRADES[i].percent;
@@ -125,10 +141,11 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
   })();
 
   const totalProfit = (() => {
+    if (!hasValidStartingPrice) return null;
     let total = 0;
     let hasAny = false;
     for (let i = 0; i < trades.length; i++) {
-      const entry = parseFloat(trades[i].entryPrice);
+      const entry = calcEntryPrice(startingPriceNum, TRADES[i].bajada);
       const close = parseFloat(trades[i].closePrice ?? '');
       if (isNaN(entry) || entry <= 0 || isNaN(close) || close <= 0) continue;
       const allocated = (capitalNum * TRADES[i].percent) / 100;
@@ -154,39 +171,48 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     <div className="page">
       <Header />
 
-      <CapitalInput
-        capital={capital}
-        onChange={handleCapitalChange}
-        hasValidCapital={hasValidCapital}
-        formattedCapital={hasValidCapital ? formatCurrency(capitalNum) : ''}
-        isLocked={isCapitalLocked}
-        onRequestEdit={handleCapitalPress}
-      />
+      <div className="inputs-row">
+        <NumericField
+          label="Capital"
+          value={capital}
+          onChange={handleCapitalChange}
+          isValid={hasValidCapital}
+          formattedValue={hasValidCapital ? formatCurrency(capitalNum) : ''}
+          isLocked={isCapitalLocked}
+          onRequestEdit={handleCapitalPress}
+        />
+        <NumericField
+          label="Starting Price"
+          value={startingPrice}
+          onChange={handleStartingPriceChange}
+          isValid={hasValidStartingPrice}
+          formattedValue={hasValidStartingPrice ? formatCurrency(startingPriceNum) : ''}
+          isLocked={isStartingPriceLocked}
+          onRequestEdit={handleStartingPricePress}
+        />
+      </div>
 
-      {!hasValidCapital ? (
+      {!canShowContent ? (
         <EmptyState />
       ) : (
-        <TradeBreakdown capitalNum={capitalNum} />
+        <TradeBreakdown capitalNum={capitalNum} startingPriceNum={startingPriceNum} />
       )}
 
-      {hasValidCapital && (
+      {canShowContent && (
         <DividerBar canAddRow={canAddRow} onAddRow={handleAddRow} />
       )}
 
-      {hasValidCapital && trades.length > 0 && (
+      {canShowContent && trades.length > 0 && (
         <TradePriceTable
           trades={trades}
-          entryRefs={entryRefs}
           closeRefs={closeRefs}
-          onEntryChange={handleEntryChange}
           onCloseChange={handleCloseChange}
           onDeleteEntry={handleDeleteEntry}
-          onDeleteClose={handleDeleteClose}
           profits={profits}
         />
       )}
 
-      {hasValidCapital && trades.length > 0 && (
+      {canShowContent && trades.length > 0 && (
         <TradeSummary
           entryAvg={formattedEntryAvg}
           closeAvg={formattedCloseAvg}
@@ -195,7 +221,7 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
         />
       )}
 
-      {hasValidCapital && totalProfit !== null && (
+      {canShowContent && totalProfit !== null && (
         <SaveButton visible={true} onPress={handleSavePress} />
       )}
 
@@ -207,6 +233,16 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
         cancelLabel="Cancel"
         onConfirm={handleConfirmEdit}
         onCancel={handleCancelEdit}
+      />
+
+      <ConfirmModal
+        visible={showStartingPriceConfirm}
+        title="Change Starting Price"
+        message="Are you sure you want to change the starting price? All entry prices will recalculate."
+        confirmLabel="Yes, Unlock"
+        cancelLabel="Cancel"
+        onConfirm={handleStartingPriceConfirm}
+        onCancel={handleStartingPriceCancel}
       />
 
       <ConfirmModal

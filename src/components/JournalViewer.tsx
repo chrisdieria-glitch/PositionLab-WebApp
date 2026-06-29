@@ -1,5 +1,6 @@
 import { TRADES } from '../constants/trades';
 import { formatCurrency } from '../utils/format';
+import { calcEntryPrice } from '../utils/calculations';
 import type { SavedOperation } from '../types';
 
 interface JournalViewerProps {
@@ -7,8 +8,9 @@ interface JournalViewerProps {
 }
 
 export default function JournalViewer({ operation }: JournalViewerProps) {
-  const { capital, trades, entryWeightedAvg, closeWeightedAvg, totalProfit } = operation;
+  const { capital, startingPrice, trades, entryWeightedAvg, closeWeightedAvg, totalProfit } = operation;
 
+  const hasStartingPrice = typeof startingPrice === 'number' && startingPrice > 0;
   const hasClose = trades && trades.some((t) => t.closePrice !== null);
   const hasEntry = trades && trades.some((t) => t.entryPrice !== null);
 
@@ -26,6 +28,13 @@ export default function JournalViewer({ operation }: JournalViewerProps) {
   const isProfitPositive = formattedTotalProfit.startsWith('+');
   const isProfitNegative = formattedTotalProfit.startsWith('-');
 
+  const getEntryPrice = (index: number): number | null => {
+    if (hasStartingPrice) {
+      return calcEntryPrice(startingPrice, TRADES[index].bajada);
+    }
+    return trades?.[index]?.entryPrice ?? null;
+  };
+
   return (
     <div>
       <div className="panel">
@@ -35,26 +44,38 @@ export default function JournalViewer({ operation }: JournalViewerProps) {
         </div>
       </div>
 
+      {hasStartingPrice && (
+        <div className="panel">
+          <h2 className="section-title">Starting Price</h2>
+          <div className="jv-capital-row">
+            <span className="jv-capital-value">${formatCurrency(startingPrice)}</span>
+          </div>
+        </div>
+      )}
+
       <div className="panel">
         <h2 className="section-title">Allocations</h2>
         <div className="table-header">
           <span className="table-header-text col-trade">Trade</span>
-          <span className="table-header-text col-size">Size</span>
-          <span className="table-header-text col-risk">Risk</span>
+          <span className="table-header-text col-risk">Drop</span>
+          <span className="table-header-text col-entry-price">Entry Price</span>
           <span className="table-header-text col-amount">Amount</span>
         </div>
         {TRADES.map((trade) => {
           const amount = formatCurrency((capital * trade.percent) / 100);
+          const entry = getEntryPrice(TRADES.indexOf(trade));
           return (
             <div key={trade.id} className="table-row">
               <div className="col-trade">
                 <span className="trade-badge">{trade.label}</span>
               </div>
-              <div className="col-size">
-                <span className="badge-pill badge-blue">{trade.percent}%</span>
-              </div>
               <div className="col-risk">
                 <span className="badge-pill badge-red">{trade.bajada}%</span>
+              </div>
+              <div className="col-entry-price">
+                <span className="entry-price-value">
+                  {entry !== null ? `$${formatCurrency(entry)}` : '—'}
+                </span>
               </div>
               <div className="col-amount">
                 <span className="amount-value">${amount}</span>
@@ -73,7 +94,7 @@ export default function JournalViewer({ operation }: JournalViewerProps) {
             <span className="table-header-text col-profit">Profit</span>
           </div>
           {trades.map((trade, index) => {
-            const entry = trade.entryPrice;
+            const entry = getEntryPrice(index);
             const close = trade.closePrice;
             const profitCalc = (() => {
               if (entry && close) {
@@ -97,12 +118,6 @@ export default function JournalViewer({ operation }: JournalViewerProps) {
                   <span className="trade-badge">{TRADES[index].label}</span>
                 </div>
                 <div className="col-prices">
-                  <div className="price-row">
-                    <span className="price-label">Entry:</span>
-                    <span className="jv-price-value">
-                      {entry ? entry.toFixed(2) : '—'}
-                    </span>
-                  </div>
                   <div className="price-row">
                     <span className="price-label">Close:</span>
                     <span className="jv-price-value">

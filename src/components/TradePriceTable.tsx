@@ -5,18 +5,15 @@ import type { TradeEntry, ProfitData } from '../types';
 
 interface TradePriceTableProps {
   trades: TradeEntry[];
-  entryRefs: React.MutableRefObject<(HTMLInputElement | null)[]>;
   closeRefs: React.MutableRefObject<(HTMLInputElement | null)[]>;
-  onEntryChange: (index: number, text: string) => void;
   onCloseChange: (index: number, text: string) => void;
   onDeleteEntry: (index: number) => void;
-  onDeleteClose: (index: number) => void;
   profits: (ProfitData | null)[];
 }
 
 export default function TradePriceTable({
-  trades, entryRefs, closeRefs,
-  onEntryChange, onCloseChange,
+  trades, closeRefs,
+  onCloseChange,
   onDeleteEntry,
   profits,
 }: TradePriceTableProps) {
@@ -34,7 +31,6 @@ export default function TradePriceTable({
         const profitData = profits[index];
         const isPositive = profitData && profitData.amount.startsWith('+');
         const isNegative = profitData && profitData.amount.startsWith('-');
-        const hasEntry = trade.entryPrice !== null;
 
         return (
           <div key={index} className="table-row">
@@ -42,18 +38,6 @@ export default function TradePriceTable({
               <span className="trade-badge">{TRADES[index].label}</span>
             </div>
             <div className="col-prices">
-              <div className="price-row">
-                <span className="price-label">Entry:</span>
-                <input
-                  ref={el => { entryRefs.current[index] = el; }}
-                  type="text"
-                  className="price-input entry"
-                  placeholder="0.00"
-                  value={hasEntry ? trade.entryPrice : ''}
-                  onChange={(e) => onEntryChange(index, e.target.value)}
-                  inputMode="decimal"
-                />
-              </div>
               <div className="price-row">
                 <span className="price-label">Close:</span>
                 <input

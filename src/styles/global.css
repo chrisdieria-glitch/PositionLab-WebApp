@@ -268,6 +268,39 @@ body {
 }
 
 /* ============================================
+   Inputs Row (side-by-side Capital + Starting Price)
+   ============================================ */
+.inputs-row {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.inputs-row .numeric-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.numeric-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.numeric-field-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: 20px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  cursor: default;
+}
+
+/* ============================================
    Empty State
    ============================================ */
 .empty-state {
@@ -336,10 +369,19 @@ body {
 }
 
 .col-risk {
-  flex: 1;
   min-width: 44px;
   display: flex;
   justify-content: flex-start;
+}
+
+.col-entry-price {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 80px;
+  max-width: 130px;
+  margin: 0 10px;
 }
 
 .col-amount {
@@ -383,6 +425,14 @@ body {
   font-size: 20px;
   font-weight: 700;
   color: var(--green);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.entry-price-value {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--blue-badge);
   font-family: var(--font-mono);
   white-space: nowrap;
 }
@@ -822,10 +872,22 @@ body {
 }
 
 @media (max-width: 600px) {
+  .inputs-row {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
   .capital-input-row {
     flex-direction: column;
     align-items: stretch;
     gap: var(--spacing-sm);
+  }
+
+  .numeric-field-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-sm);
+    padding: 16px;
   }
 
   .capital-total-wrap {

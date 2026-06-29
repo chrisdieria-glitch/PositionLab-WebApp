@@ -8,21 +8,30 @@ interface CalculatorContextValue {
   capital: string;
   isCapitalLocked: boolean;
   showConfirmModal: boolean;
-  showSaveConfirm: boolean;
   capitalTimerRef: MutableRefObject<ReturnType<typeof setTimeout> | null>;
   handleCapitalChange: (text: string) => void;
   handleCapitalPress: () => void;
   handleConfirmEdit: () => void;
   handleCancelEdit: () => void;
+
+  startingPrice: string;
+  isStartingPriceLocked: boolean;
+  showStartingPriceConfirm: boolean;
+  startingPriceTimerRef: MutableRefObject<ReturnType<typeof setTimeout> | null>;
+  handleStartingPriceChange: (text: string) => void;
+  handleStartingPricePress: () => void;
+  handleStartingPriceConfirm: () => void;
+  handleStartingPriceCancel: () => void;
+
+  showSaveConfirm: boolean;
   handleSavePress: () => void;
   handleSaveCancel: () => void;
   setShowSaveConfirm: (v: boolean) => void;
+
   trades: TradeEntry[];
   closeCount: number;
-  entryRefs: MutableRefObject<(HTMLInputElement | null)[]>;
   closeRefs: MutableRefObject<(HTMLInputElement | null)[]>;
   handleAddRow: () => void;
-  handleEntryChange: (index: number, text: string) => void;
   handleCloseChange: (index: number, text: string) => void;
   handleDeleteEntry: (index: number) => void;
   handleDeleteClose: (index: number) => void;
@@ -35,16 +44,20 @@ export function CalculatorProvider({ children }: { children: ReactNode }) {
   const [capital, setCapital] = useState('');
   const [isCapitalLocked, setIsCapitalLocked] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const capitalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [startingPrice, setStartingPrice] = useState('');
+  const [isStartingPriceLocked, setIsStartingPriceLocked] = useState(false);
+  const [showStartingPriceConfirm, setShowStartingPriceConfirm] = useState(false);
+  const startingPriceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
 
   const {
     trades,
     closeCount,
-    entryRefs,
     closeRefs,
     handleAddRow,
-    handleEntryChange,
     handleCloseChange,
     handleDeleteEntry,
     handleDeleteClose,
@@ -54,6 +67,7 @@ export function CalculatorProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     return () => {
       if (capitalTimerRef.current) clearTimeout(capitalTimerRef.current);
+      if (startingPriceTimerRef.current) clearTimeout(startingPriceTimerRef.current);
     };
   }, []);
 
@@ -85,6 +99,34 @@ export function CalculatorProvider({ children }: { children: ReactNode }) {
     setShowConfirmModal(false);
   }, []);
 
+  const handleStartingPriceChange = useCallback((text: string) => {
+    const cleaned = sanitizeDecimalInput(text);
+    if (cleaned === null) return;
+    setStartingPrice(cleaned);
+    setIsStartingPriceLocked(false);
+    if (startingPriceTimerRef.current) clearTimeout(startingPriceTimerRef.current);
+    startingPriceTimerRef.current = setTimeout(() => {
+      const num = parseFloat(cleaned);
+      if (!isNaN(num) && num > 0) {
+        setIsStartingPriceLocked(true);
+      }
+    }, 10000);
+  }, []);
+
+  const handleStartingPricePress = useCallback(() => {
+    if (isStartingPriceLocked) setShowStartingPriceConfirm(true);
+  }, [isStartingPriceLocked]);
+
+  const handleStartingPriceConfirm = useCallback(() => {
+    setShowStartingPriceConfirm(false);
+    setIsStartingPriceLocked(false);
+    if (startingPriceTimerRef.current) clearTimeout(startingPriceTimerRef.current);
+  }, []);
+
+  const handleStartingPriceCancel = useCallback(() => {
+    setShowStartingPriceConfirm(false);
+  }, []);
+
   const handleSavePress = useCallback(() => {
     setShowSaveConfirm(true);
   }, []);
@@ -99,21 +141,30 @@ export function CalculatorProvider({ children }: { children: ReactNode }) {
         capital,
         isCapitalLocked,
         showConfirmModal,
-        showSaveConfirm,
         capitalTimerRef,
         handleCapitalChange,
         handleCapitalPress,
         handleConfirmEdit,
         handleCancelEdit,
+
+        startingPrice,
+        isStartingPriceLocked,
+        showStartingPriceConfirm,
+        startingPriceTimerRef,
+        handleStartingPriceChange,
+        handleStartingPricePress,
+        handleStartingPriceConfirm,
+        handleStartingPriceCancel,
+
+        showSaveConfirm,
         handleSavePress,
         handleSaveCancel,
         setShowSaveConfirm,
+
         trades,
         closeCount,
-        entryRefs,
         closeRefs,
         handleAddRow,
-        handleEntryChange,
         handleCloseChange,
         handleDeleteEntry,
         handleDeleteClose,
