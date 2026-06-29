@@ -48,7 +48,6 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     handleAddRow,
     handleCloseChange,
     handleDeleteEntry,
-    handleDeleteClose,
     canAddRow,
   } = useCalculator();
 
