@@ -11,7 +11,7 @@ export default function DividerBar({ canAddRow, onAddRow }: DividerBarProps) {
         disabled={!canAddRow}
         onClick={onAddRow}
       >
-        + Add entry and close price
+        + Add close Price 
       </button>
     </div>
   );
