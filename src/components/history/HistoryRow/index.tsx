@@ -1,3 +1,5 @@
+import './styles.css';
+
 interface HistoryRowProps {
   label: string;
   profit?: number;

@@ -1,5 +1,6 @@
-import HistoryRow from './HistoryRow';
-import type { HistoryListItem } from '../types';
+import HistoryRow from '../HistoryRow';
+import type { HistoryListItem } from '../../../types';
+import './styles.css';
 
 interface HistoryListProps {
   items: HistoryListItem[];

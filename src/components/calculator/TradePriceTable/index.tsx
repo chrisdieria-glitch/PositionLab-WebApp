@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { TRADES } from '../constants/trades';
-import { getPreciseFontSize } from '../utils/font';
-import type { TradeEntry, ProfitData } from '../types';
+import { TRADES } from '../../../constants/trades';
+import { getPreciseFontSize } from '../../../utils/font';
+import type { TradeEntry, ProfitData } from '../../../types';
+import './styles.css';
 
 interface TradePriceTableProps {
   trades: TradeEntry[];

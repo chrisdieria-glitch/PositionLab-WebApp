@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+import './styles.css';
 
 interface NumericFieldProps {
   label: string;

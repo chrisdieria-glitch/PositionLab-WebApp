@@ -1,0 +1,119 @@
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-lg);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  letter-spacing: -0.3px;
+}
+
+.sidebar-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xl);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-sans);
+}
+
+.sidebar-link:hover {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+.sidebar-link.active {
+  color: var(--green);
+  background-color: rgba(38, 166, 154, 0.08);
+}
+
+.sidebar-link-indicator {
+  width: 3px;
+  height: 20px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background-color 0.15s;
+}
+
+.sidebar-link.active .sidebar-link-indicator {
+  background: var(--green);
+}
+
+.sidebar-icon {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  :root {
+    --sidebar-width: 56px;
+  }
+
+  .sidebar {
+    padding: var(--spacing-md) var(--spacing-sm);
+    align-items: center;
+  }
+
+  .sidebar-logo {
+    font-size: 0;
+  }
+
+  .sidebar-logo::first-letter {
+    font-size: 20px;
+  }
+
+  .sidebar-subtitle {
+    display: none;
+  }
+
+  .sidebar-link-indicator {
+    display: none;
+  }
+
+  .sidebar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-label {
+    display: none;
+  }
+
+  .sidebar-link {
+    justify-content: center;
+    padding: 10px;
+    gap: 0;
+  }
+}

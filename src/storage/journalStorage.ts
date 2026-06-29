@@ -41,30 +41,3 @@ export async function saveOperation(
     return null;
   }
 }
-
-export async function updateOperation(
-  id: string,
-  updates: Partial<SavedOperation>
-): Promise<SavedOperation | null> {
-  try {
-    const ops = await getOperations();
-    const index = ops.findIndex((op) => op.id === id);
-    if (index === -1) return null;
-    ops[index] = { ...ops[index], ...updates };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(ops));
-    return ops[index];
-  } catch {
-    return null;
-  }
-}
-
-export async function deleteOperation(id: string): Promise<boolean> {
-  try {
-    const ops = await getOperations();
-    const filtered = ops.filter((op) => op.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-    return true;
-  } catch {
-    return false;
-  }
-}

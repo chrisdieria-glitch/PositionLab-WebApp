@@ -1,3 +1,5 @@
+import './styles.css';
+
 export default function EmptyState() {
   return (
     <div className="empty-state">

@@ -53,6 +53,8 @@ export function CalculatorProvider({ children }: { children: ReactNode }) {
 
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
 
+  const MAX_CAPITAL = 100_000_000_000_000_000;
+
   const {
     trades,
     closeCount,
@@ -74,6 +76,7 @@ export function CalculatorProvider({ children }: { children: ReactNode }) {
   const handleCapitalChange = useCallback((text: string) => {
     const cleaned = sanitizeDecimalInput(text);
     if (cleaned === null) return;
+    if (parseFloat(cleaned) > MAX_CAPITAL) return;
     setCapital(cleaned);
     setIsCapitalLocked(false);
     if (capitalTimerRef.current) clearTimeout(capitalTimerRef.current);
@@ -102,6 +105,7 @@ export function CalculatorProvider({ children }: { children: ReactNode }) {
   const handleStartingPriceChange = useCallback((text: string) => {
     const cleaned = sanitizeDecimalInput(text);
     if (cleaned === null) return;
+    if (cleaned.length > 27) return;
     setStartingPrice(cleaned);
     setIsStartingPriceLocked(false);
     if (startingPriceTimerRef.current) clearTimeout(startingPriceTimerRef.current);

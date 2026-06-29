@@ -6,9 +6,9 @@ import {
   groupByMonth,
   groupByDay,
 } from '../utils/historyGrouping';
-import HistoryList from '../components/HistoryList';
-import HistoryRow from '../components/HistoryRow';
-import JournalViewer from '../components/JournalViewer';
+import HistoryList from '../components/history/HistoryList';
+import HistoryRow from '../components/history/HistoryRow';
+import JournalViewer from '../components/history/JournalViewer';
 import type { SavedOperation, NavScreen, HistoryListItem } from '../types';
 
 const MONTH_NAMES = [

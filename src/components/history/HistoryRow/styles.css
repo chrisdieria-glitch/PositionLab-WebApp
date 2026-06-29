@@ -1,0 +1,25 @@
+.history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+
+.history-row:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+.history-label {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.history-profit {
+  font-size: 17px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}

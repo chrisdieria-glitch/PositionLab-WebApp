@@ -1,0 +1,32 @@
+.divider-bar {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.btn-add-price {
+  border: 1px solid var(--blue);
+  border-radius: 6px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: opacity 0.15s;
+}
+
+.btn-add-price:hover {
+  opacity: 0.8;
+}
+
+.btn-add-price:disabled {
+  border-color: var(--border-subtle);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.5;
+}

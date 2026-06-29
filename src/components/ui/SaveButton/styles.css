@@ -1,0 +1,21 @@
+.btn-save-wrap {
+  margin-bottom: var(--spacing-md);
+}
+
+.btn-save {
+  width: 100%;
+  border: 1px solid var(--blue);
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: opacity 0.15s;
+}
+
+.btn-save:hover {
+  opacity: 0.8;
+}

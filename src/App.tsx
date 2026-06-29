@@ -1,10 +1,12 @@
 import { useState, useCallback } from 'react';
-import Sidebar from './components/Sidebar';
+import Sidebar from './components/layout/Sidebar';
 import CalculatorPage from './pages/CalculatorPage';
 import HistoryPage from './pages/HistoryPage';
 import { CalculatorProvider } from './context/CalculatorContext';
 import type { TabKey } from './types';
 import './styles/global.css';
+import './styles/shared.css';
+import './styles/page-calculator.css';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabKey>('calculator');

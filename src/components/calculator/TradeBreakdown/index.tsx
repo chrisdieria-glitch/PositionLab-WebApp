@@ -1,7 +1,7 @@
-import { TRADES } from '../constants/trades';
-import { formatCurrency } from '../utils/format';
-import { getPreciseFontSize } from '../utils/font';
-import { calcEntryPrice } from '../utils/calculations';
+import { TRADES } from '../../../constants/trades';
+import { formatCurrency } from '../../../utils/format';
+import { getPreciseFontSize } from '../../../utils/font';
+import { calcEntryPrice } from '../../../utils/calculations';
 
 interface TradeBreakdownProps {
   capitalNum: number;

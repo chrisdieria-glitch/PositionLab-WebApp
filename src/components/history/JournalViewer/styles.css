@@ -1,0 +1,21 @@
+.jv-capital-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.jv-capital-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--green);
+  font-family: var(--font-mono);
+}
+
+.jv-price-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  padding: 6px 8px;
+  text-align: right;
+}

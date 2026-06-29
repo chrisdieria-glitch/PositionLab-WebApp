@@ -1,7 +1,8 @@
-import { TRADES } from '../constants/trades';
-import { formatCurrency } from '../utils/format';
-import { calcEntryPrice } from '../utils/calculations';
-import type { SavedOperation } from '../types';
+import { TRADES } from '../../../constants/trades';
+import { formatCurrency } from '../../../utils/format';
+import { calcEntryPrice } from '../../../utils/calculations';
+import type { SavedOperation } from '../../../types';
+import './styles.css';
 
 interface JournalViewerProps {
   operation: SavedOperation;

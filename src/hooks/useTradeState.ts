@@ -30,6 +30,7 @@ export function useTradeState() {
   const handleCloseChange = (index: number, text: string) => {
     const cleaned = sanitizeDecimalInput(text);
     if (cleaned === null) return;
+    if (cleaned.length > 27) return;
     setTrades(prev => {
       const next = [...prev];
       next[index] = { ...next[index], closePrice: cleaned };
@@ -49,18 +50,16 @@ export function useTradeState() {
     });
   };
 
-  const entryCount = trades.length;
   const closeCount = trades.filter(t => t.closePrice !== null && t.closePrice !== '').length;
 
   return {
     trades,
-    entryCount,
     closeCount,
     closeRefs,
     handleAddRow,
     handleCloseChange,
     handleDeleteEntry,
     handleDeleteClose,
-    canAddRow: entryCount < MAX_TRADES,
+    canAddRow: trades.length < MAX_TRADES,
   };
 }

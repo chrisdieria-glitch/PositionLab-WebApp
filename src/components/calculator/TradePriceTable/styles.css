@@ -1,0 +1,63 @@
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.price-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  width: 42px;
+}
+
+.price-input {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  border-bottom: 2px solid var(--border-subtle);
+  padding: 6px 10px;
+  width: 130px;
+  text-align: right;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.price-input:focus {
+  border-bottom-color: var(--blue);
+}
+
+.price-input.entry {
+  color: var(--green);
+}
+
+.btn-delete-row {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 6px;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.btn-delete-row:hover {
+  color: var(--text-secondary);
+}
+
+.trade-action-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+@media (max-width: 600px) {
+  .price-input {
+    width: 90px;
+  }
+}

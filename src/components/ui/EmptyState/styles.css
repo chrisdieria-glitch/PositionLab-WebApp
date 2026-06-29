@@ -1,0 +1,20 @@
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.empty-text {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}

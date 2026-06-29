@@ -1,0 +1,45 @@
+.main-content {
+  flex: 1;
+  padding: var(--spacing-xl);
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.content-inner {
+  width: 100%;
+  max-width: var(--content-max-width);
+}
+
+.page {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.inputs-row {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.inputs-row .numeric-field {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .main-content {
+    padding: var(--spacing-md);
+  }
+}
+
+@media (max-width: 600px) {
+  .inputs-row {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+}

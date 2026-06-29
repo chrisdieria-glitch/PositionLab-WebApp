@@ -1,4 +1,5 @@
-import type { TabKey } from '../types';
+import type { TabKey } from '../../../types';
+import './styles.css';
 
 interface SidebarProps {
   activeTab: TabKey;

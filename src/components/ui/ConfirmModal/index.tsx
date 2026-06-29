@@ -1,3 +1,5 @@
+import './styles.css';
+
 interface ConfirmModalProps {
   visible: boolean;
   title: string;

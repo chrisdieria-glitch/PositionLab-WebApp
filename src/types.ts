@@ -1,10 +1,3 @@
-export interface TradeConfig {
-  id: number;
-  label: string;
-  percent: number;
-  bajada: number;
-}
-
 export interface TradeEntry {
   closePrice: string | null;
 }

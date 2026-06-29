@@ -1,3 +1,5 @@
+import './styles.css';
+
 interface DividerBarProps {
   canAddRow: boolean;
   onAddRow: () => void;
