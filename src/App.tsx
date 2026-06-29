@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
 import CalculatorPage from './pages/CalculatorPage';
 import HistoryPage from './pages/HistoryPage';
+import { CalculatorProvider } from './context/CalculatorContext';
 import type { TabKey } from './types';
 import './styles/global.css';
 
@@ -22,7 +23,7 @@ export default function App() {
   }, []);
 
   return (
-    <>
+    <CalculatorProvider>
       <Sidebar activeTab={activeTab} onTabChange={switchTab} />
       <main className="main-content">
         <div className="content-inner">
@@ -34,6 +35,6 @@ export default function App() {
           )}
         </div>
       </main>
-    </>
+    </CalculatorProvider>
   );
 }

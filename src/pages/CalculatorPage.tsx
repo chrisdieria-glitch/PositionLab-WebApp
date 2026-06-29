@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import Header from '../components/Header';
 import CapitalInput from '../components/CapitalInput';
 import EmptyState from '../components/EmptyState';
@@ -8,24 +8,29 @@ import TradePriceTable from '../components/TradePriceTable';
 import TradeSummary from '../components/TradeSummary';
 import ConfirmModal from '../components/ConfirmModal';
 import SaveButton from '../components/SaveButton';
-import { sanitizeDecimalInput } from '../utils/sanitize';
 import { formatCurrency } from '../utils/format';
 import { TRADES } from '../constants/trades';
-import { useTradeState } from '../hooks/useTradeState';
 import { saveOperation } from '../storage/journalStorage';
+import { useCalculator } from '../context/CalculatorContext';
 
 interface CalculatorPageProps {
   onSaveComplete?: () => void;
 }
 
 export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) {
-  const [capital, setCapital] = useState('');
-  const [isCapitalLocked, setIsCapitalLocked] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
-  const capitalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const {
+    capital,
+    isCapitalLocked,
+    showConfirmModal,
+    showSaveConfirm,
+    capitalTimerRef,
+    handleCapitalChange,
+    handleCapitalPress,
+    handleConfirmEdit,
+    handleCancelEdit,
+    handleSavePress,
+    handleSaveCancel,
+    setShowSaveConfirm,
     trades,
     closeCount,
     entryRefs,
@@ -36,39 +41,7 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     handleDeleteEntry,
     handleDeleteClose,
     canAddRow,
-  } = useTradeState();
-
-  const handleCapitalChange = (text: string) => {
-    const cleaned = sanitizeDecimalInput(text);
-    if (cleaned === null) return;
-    setCapital(cleaned);
-    setIsCapitalLocked(false);
-    if (capitalTimerRef.current) clearTimeout(capitalTimerRef.current);
-    capitalTimerRef.current = setTimeout(() => {
-      const num = parseFloat(cleaned);
-      if (!isNaN(num) && num > 0) {
-        setIsCapitalLocked(true);
-      }
-    }, 10000);
-  };
-
-  const handleCapitalPress = () => {
-    if (isCapitalLocked) setShowConfirmModal(true);
-  };
-
-  const handleConfirmEdit = () => {
-    setShowConfirmModal(false);
-    setIsCapitalLocked(false);
-    if (capitalTimerRef.current) clearTimeout(capitalTimerRef.current);
-  };
-
-  const handleCancelEdit = () => {
-    setShowConfirmModal(false);
-  };
-
-  const handleSavePress = () => {
-    setShowSaveConfirm(true);
-  };
+  } = useCalculator();
 
   const handleSaveConfirm = async () => {
     setShowSaveConfirm(false);
@@ -94,10 +67,6 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     } else if (onSaveComplete) {
       onSaveComplete();
     }
-  };
-
-  const handleSaveCancel = () => {
-    setShowSaveConfirm(false);
   };
 
   useEffect(() => {
