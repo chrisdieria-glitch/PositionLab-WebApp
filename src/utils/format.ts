@@ -1,6 +1,6 @@
-export function formatCurrency(value: number): string {
+export function formatCurrency(value: number, fractionDigits: number = 2): string {
   return value.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
   });
 }

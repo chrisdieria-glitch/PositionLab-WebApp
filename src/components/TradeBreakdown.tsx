@@ -16,6 +16,7 @@ export default function TradeBreakdown({ capitalNum, startingPriceNum }: TradeBr
       <h2 className="section-title">Allocations</h2>
       <div className="table-header">
         <span className="table-header-text col-trade">Trade</span>
+        <span className="table-header-text col-size">Alloc</span>
         <span className="table-header-text col-risk">Drop</span>
         <span className="table-header-text col-entry-price">Entry Price</span>
         <span className="table-header-text col-amount">Amount</span>
@@ -25,11 +26,14 @@ export default function TradeBreakdown({ capitalNum, startingPriceNum }: TradeBr
         const entryPrice = hasStartingPrice
           ? calcEntryPrice(startingPriceNum, trade.bajada)
           : 0;
-        const formattedEntry = hasStartingPrice ? formatCurrency(entryPrice) : '—';
+        const formattedEntry = hasStartingPrice ? formatCurrency(entryPrice, 3) : '—';
         return (
           <div key={trade.id} className="table-row">
             <div className="col-trade">
               <span className="trade-badge">{trade.label}</span>
+            </div>
+            <div className="col-size">
+              <span className="badge-pill badge-blue">{trade.percent}%</span>
             </div>
             <div className="col-risk">
               <span className="badge-pill badge-red">{trade.bajada}%</span>
@@ -37,9 +41,9 @@ export default function TradeBreakdown({ capitalNum, startingPriceNum }: TradeBr
             <div className="col-entry-price">
               <span
                 className="entry-price-value"
-                style={hasStartingPrice ? { fontSize: getPreciseFontSize(`$${formattedEntry}`, 130) } : undefined}
+                style={hasStartingPrice ? { fontSize: getPreciseFontSize(formattedEntry, 150) } : undefined}
               >
-                {hasStartingPrice ? `$${formattedEntry}` : formattedEntry}
+                {formattedEntry}
               </span>
             </div>
             <div className="col-amount">

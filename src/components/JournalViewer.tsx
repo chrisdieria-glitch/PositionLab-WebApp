@@ -57,6 +57,7 @@ export default function JournalViewer({ operation }: JournalViewerProps) {
         <h2 className="section-title">Allocations</h2>
         <div className="table-header">
           <span className="table-header-text col-trade">Trade</span>
+          <span className="table-header-text col-size">Alloc</span>
           <span className="table-header-text col-risk">Drop</span>
           <span className="table-header-text col-entry-price">Entry Price</span>
           <span className="table-header-text col-amount">Amount</span>
@@ -69,12 +70,15 @@ export default function JournalViewer({ operation }: JournalViewerProps) {
               <div className="col-trade">
                 <span className="trade-badge">{trade.label}</span>
               </div>
+              <div className="col-size">
+                <span className="badge-pill badge-blue">{trade.percent}%</span>
+              </div>
               <div className="col-risk">
                 <span className="badge-pill badge-red">{trade.bajada}%</span>
               </div>
               <div className="col-entry-price">
                 <span className="entry-price-value">
-                  {entry !== null ? `$${formatCurrency(entry)}` : '—'}
+                  {entry !== null ? formatCurrency(entry, 3) : '—'}
                 </span>
               </div>
               <div className="col-amount">
