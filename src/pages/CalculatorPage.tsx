@@ -51,9 +51,16 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     canAddRow,
   } = useCalculator();
 
-  const [customDrops, setCustomDrops] = useState<string[]>(() =>
-    TRADES.map(t => t.bajada.toString())
-  );
+  const [customDrops, setCustomDrops] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem('positionlab_drops');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length === TRADES.length) return parsed;
+      }
+    } catch {}
+    return TRADES.map(t => t.bajada.toString());
+  });
 
   const handleDropChange = (index: number, value: string) => {
     setCustomDrops(prev => {
@@ -96,6 +103,10 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
       if (capitalTimerRef.current) clearTimeout(capitalTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('positionlab_drops', JSON.stringify(customDrops));
+  }, [customDrops]);
 
   const capitalNum = parseFloat(capital);
   const hasValidCapital = !isNaN(capitalNum) && capitalNum > 0;

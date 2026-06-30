@@ -60,7 +60,12 @@ export default function TradeBreakdown({ capitalNum, startingPriceNum, customDro
                   value={customDrops[index]}
                   onChange={(e) => {
                     const cleaned = sanitizeDecimalInput(e.target.value);
-                    if (cleaned !== null) onDropChange(index, cleaned);
+                    if (cleaned === null) return;
+                    if (cleaned !== '') {
+                      const val = parseFloat(cleaned);
+                      if (isNaN(val) || val > 100) return;
+                    }
+                    onDropChange(index, cleaned);
                   }}
                   onBlur={(e) => handleBlur(index, e.target.value)}
                   inputMode="decimal"
