@@ -12,6 +12,7 @@ export interface SavedTrade {
   percent: number;
   entryPrice: number | null;
   closePrice: number | null;
+  marketDropPercent?: number;
 }
 
 export interface SavedOperation {

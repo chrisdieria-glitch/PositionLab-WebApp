@@ -34,7 +34,7 @@ function HistoryIcon() {
 }
 
 const NAV_ITEMS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
-  { key: 'calculator', label: 'Calculator', icon: <CalculatorIcon /> },
+  { key: 'calculator', label: 'Operation', icon: <CalculatorIcon /> },
   { key: 'history', label: 'History', icon: <HistoryIcon /> },
 ];
 

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Header from '../components/ui/Header';
 import NumericField from '../components/ui/NumericField';
 import EmptyState from '../components/ui/EmptyState';
@@ -51,6 +51,18 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     canAddRow,
   } = useCalculator();
 
+  const [customDrops, setCustomDrops] = useState<string[]>(() =>
+    TRADES.map(t => t.bajada.toString())
+  );
+
+  const handleDropChange = (index: number, value: string) => {
+    setCustomDrops(prev => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
+  };
+
   const handleSaveConfirm = async () => {
     setShowSaveConfirm(false);
     const now = new Date();
@@ -63,8 +75,9 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
       trades: trades.map((t, i) => ({
         label: TRADES[i].label,
         percent: TRADES[i].percent,
-        entryPrice: calcEntryPrice(startingPriceNum, TRADES[i].bajada),
+        entryPrice: calcEntryPrice(startingPriceNum, getBajada(i)),
         closePrice: t.closePrice !== '' && t.closePrice !== null ? parseFloat(t.closePrice) : null,
+        marketDropPercent: getBajada(i),
       })),
       entryWeightedAvg,
       closeWeightedAvg,
@@ -92,8 +105,13 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
 
   const canShowContent = hasValidCapital && hasValidStartingPrice;
 
+  function getBajada(i: number): number {
+    const val = parseFloat(customDrops[i]);
+    return !isNaN(val) && val >= 0 ? val : TRADES[i].bajada;
+  }
+
   const profits = trades.map((trade, i) => {
-    const entry = calcEntryPrice(startingPriceNum, TRADES[i].bajada);
+    const entry = calcEntryPrice(startingPriceNum, getBajada(i));
     const close = parseFloat(trade.closePrice ?? '');
     if (!hasValidStartingPrice || isNaN(entry) || entry <= 0 || isNaN(close) || close <= 0) return null;
     const allocated = (capitalNum * TRADES[i].percent) / 100;
@@ -117,7 +135,7 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     let totalWeight = 0;
     for (let i = 0; i < trades.length; i++) {
       if (!hasValidStartingPrice) break;
-      const price = calcEntryPrice(startingPriceNum, TRADES[i].bajada);
+      const price = calcEntryPrice(startingPriceNum, getBajada(i));
       if (!isNaN(price) && price > 0) {
         sum += price * TRADES[i].percent;
         totalWeight += TRADES[i].percent;
@@ -144,7 +162,7 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     let total = 0;
     let hasAny = false;
     for (let i = 0; i < trades.length; i++) {
-      const entry = calcEntryPrice(startingPriceNum, TRADES[i].bajada);
+      const entry = calcEntryPrice(startingPriceNum, getBajada(i));
       const close = parseFloat(trades[i].closePrice ?? '');
       if (isNaN(entry) || entry <= 0 || isNaN(close) || close <= 0) continue;
       const allocated = (capitalNum * TRADES[i].percent) / 100;
@@ -194,7 +212,12 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
       {!canShowContent ? (
         <EmptyState />
       ) : (
-        <TradeBreakdown capitalNum={capitalNum} startingPriceNum={startingPriceNum} />
+        <TradeBreakdown
+          capitalNum={capitalNum}
+          startingPriceNum={startingPriceNum}
+          customDrops={customDrops}
+          onDropChange={handleDropChange}
+        />
       )}
 
       {canShowContent && (

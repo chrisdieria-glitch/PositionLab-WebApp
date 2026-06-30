@@ -57,16 +57,22 @@
   display: flex;
   justify-content: flex-start;
   margin: 0 10px;
+  margin-right: 30px;
+}
+
+.table-header-text.col-risk {
+  margin-right: 60px;
 }
 
 .col-entry-price {
-  flex: 1;
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  width: 100px;
   min-width: 90px;
   max-width: 160px;
   margin: 0 10px;
+  margin-right: 60px;
 }
 
 .col-amount {
@@ -135,6 +141,27 @@
   color: var(--blue-badge);
   font-family: var(--font-mono);
   white-space: nowrap;
+}
+
+.badge-input {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--red-badge);
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(239, 83, 80, 0.08);
+  outline: none;
+  padding: 0;
+  width: auto;
+  max-width: 50px;
+  text-align: right;
+}
+
+.badge-pill--drop {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
 }
 
 .profit-positive {
