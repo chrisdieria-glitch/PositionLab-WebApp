@@ -9,16 +9,43 @@ interface TradeBreakdownProps {
   startingPriceNum: number;
   customDrops: string[];
   onDropChange: (index: number, value: string) => void;
+  customPercents: string[];
+  onPercentChange: (index: number, value: string) => void;
 }
 
-export default function TradeBreakdown({ capitalNum, startingPriceNum, customDrops, onDropChange }: TradeBreakdownProps) {
+export default function TradeBreakdown({
+  capitalNum, startingPriceNum,
+  customDrops, onDropChange,
+  customPercents, onPercentChange,
+}: TradeBreakdownProps) {
   const hasStartingPrice = !isNaN(startingPriceNum) && startingPriceNum > 0;
 
-  const handleBlur = (index: number, value: string) => {
+  const handleDropBlur = (index: number, value: string) => {
     const val = parseFloat(value);
     if (value === '' || isNaN(val) || val < 0 || val > 100) {
       onDropChange(index, TRADES[index].bajada.toString());
     }
+  };
+
+  const handlePercentBlur = (index: number, value: string) => {
+    const val = parseFloat(value);
+    if (value === '' || isNaN(val) || val < 0 || val > 100) {
+      onPercentChange(index, TRADES[index].percent.toString());
+    }
+  };
+
+  const handleNumericChange = (
+    raw: string,
+    onChange: (index: number, value: string) => void,
+    index: number,
+  ) => {
+    const cleaned = sanitizeDecimalInput(raw);
+    if (cleaned === null) return;
+    if (cleaned !== '') {
+      const val = parseFloat(cleaned);
+      if (isNaN(val) || val > 100) return;
+    }
+    onChange(index, cleaned);
   };
 
   return (
@@ -32,13 +59,17 @@ export default function TradeBreakdown({ capitalNum, startingPriceNum, customDro
         <span className="table-header-text col-amount">Amount</span>
       </div>
       {TRADES.map((trade, index) => {
-        const amount = formatCurrency((capitalNum * trade.percent) / 100);
         const dropValue = parseFloat(customDrops[index]);
         const effectiveBajada = !isNaN(dropValue) && dropValue >= 0 ? dropValue : trade.bajada;
         const entryPrice = hasStartingPrice
           ? calcEntryPrice(startingPriceNum, effectiveBajada)
           : 0;
         const formattedEntry = hasStartingPrice ? formatCurrency(entryPrice, 3) : '—';
+
+        const percentValue = parseFloat(customPercents[index]);
+        const effectivePercent = !isNaN(percentValue) && percentValue >= 0 ? percentValue : trade.percent;
+        const formattedAmount = formatCurrency((capitalNum * effectivePercent) / 100);
+
         return (
           <div key={trade.id} className="table-row">
             <div className="col-trade">
@@ -58,30 +89,32 @@ export default function TradeBreakdown({ capitalNum, startingPriceNum, customDro
                   type="text"
                   className="badge-input"
                   value={customDrops[index]}
-                  onChange={(e) => {
-                    const cleaned = sanitizeDecimalInput(e.target.value);
-                    if (cleaned === null) return;
-                    if (cleaned !== '') {
-                      const val = parseFloat(cleaned);
-                      if (isNaN(val) || val > 100) return;
-                    }
-                    onDropChange(index, cleaned);
-                  }}
-                  onBlur={(e) => handleBlur(index, e.target.value)}
+                  onChange={(e) => handleNumericChange(e.target.value, onDropChange, index)}
+                  onBlur={(e) => handleDropBlur(index, e.target.value)}
                   inputMode="decimal"
                 />
                 <span>%</span>
               </span>
             </div>
             <div className="col-size">
-              <span className="badge-pill badge-blue">{trade.percent}%</span>
+              <span className="badge-pill badge-blue badge-pill--drop">
+                <input
+                  type="text"
+                  className="badge-input"
+                  value={customPercents[index]}
+                  onChange={(e) => handleNumericChange(e.target.value, onPercentChange, index)}
+                  onBlur={(e) => handlePercentBlur(index, e.target.value)}
+                  inputMode="decimal"
+                />
+                <span>%</span>
+              </span>
             </div>
             <div className="col-amount">
               <span
                 className="amount-value"
-                style={{ fontSize: getPreciseFontSize(`$${amount}`, 130) }}
+                style={{ fontSize: getPreciseFontSize(`$${formattedAmount}`, 130) }}
               >
-                ${amount}
+                ${formattedAmount}
               </span>
             </div>
           </div>

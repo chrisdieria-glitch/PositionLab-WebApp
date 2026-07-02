@@ -65,7 +65,8 @@ export default function JournalViewer({ operation }: JournalViewerProps) {
           <span className="table-header-text col-amount">Amount</span>
         </div>
         {TRADES.map((trade, index) => {
-          const amount = formatCurrency((capital * trade.percent) / 100);
+          const savedPercent = trades?.[index]?.percent ?? trade.percent;
+          const amount = formatCurrency((capital * savedPercent) / 100);
           const entry = getEntryPrice(index);
           const dropDisplay = trades?.[index]?.marketDropPercent ?? trade.bajada;
           return (
@@ -82,7 +83,7 @@ export default function JournalViewer({ operation }: JournalViewerProps) {
                 <span className="badge-pill badge-red">{dropDisplay}%</span>
               </div>
               <div className="col-size">
-                <span className="badge-pill badge-blue">{trade.percent}%</span>
+                <span className="badge-pill badge-blue">{savedPercent}%</span>
               </div>
               <div className="col-amount">
                 <span className="amount-value">${amount}</span>
@@ -105,7 +106,7 @@ export default function JournalViewer({ operation }: JournalViewerProps) {
             const close = trade.closePrice;
             const profitCalc = (() => {
               if (entry && close) {
-                const allocated = (capital * TRADES[index].percent) / 100;
+                const allocated = (capital * trade.percent) / 100;
                 const quantity = allocated / entry;
                 const p = (close - entry) * quantity;
                 const pct = ((close - entry) / entry) * 100;

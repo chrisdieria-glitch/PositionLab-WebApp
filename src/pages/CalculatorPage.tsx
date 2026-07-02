@@ -62,8 +62,27 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     return TRADES.map(t => t.bajada.toString());
   });
 
+  const [customPercents, setCustomPercents] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem('positionlab_percents');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length === TRADES.length) return parsed;
+      }
+    } catch {}
+    return TRADES.map(t => t.percent.toString());
+  });
+
   const handleDropChange = (index: number, value: string) => {
     setCustomDrops(prev => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
+  };
+
+  const handlePercentChange = (index: number, value: string) => {
+    setCustomPercents(prev => {
       const next = [...prev];
       next[index] = value;
       return next;
@@ -81,7 +100,7 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
       startingPrice: startingPriceNum,
       trades: trades.map((t, i) => ({
         label: TRADES[i].label,
-        percent: TRADES[i].percent,
+        percent: getPercent(i),
         entryPrice: calcEntryPrice(startingPriceNum, getBajada(i)),
         closePrice: t.closePrice !== '' && t.closePrice !== null ? parseFloat(t.closePrice) : null,
         marketDropPercent: getBajada(i),
@@ -108,6 +127,10 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     localStorage.setItem('positionlab_drops', JSON.stringify(customDrops));
   }, [customDrops]);
 
+  useEffect(() => {
+    localStorage.setItem('positionlab_percents', JSON.stringify(customPercents));
+  }, [customPercents]);
+
   const capitalNum = parseFloat(capital);
   const hasValidCapital = !isNaN(capitalNum) && capitalNum > 0;
 
@@ -121,11 +144,16 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     return !isNaN(val) && val >= 0 ? val : TRADES[i].bajada;
   }
 
+  function getPercent(i: number): number {
+    const val = parseFloat(customPercents[i]);
+    return !isNaN(val) && val >= 0 ? val : TRADES[i].percent;
+  }
+
   const profits = trades.map((trade, i) => {
     const entry = calcEntryPrice(startingPriceNum, getBajada(i));
     const close = parseFloat(trade.closePrice ?? '');
     if (!hasValidStartingPrice || isNaN(entry) || entry <= 0 || isNaN(close) || close <= 0) return null;
-    const allocated = (capitalNum * TRADES[i].percent) / 100;
+    const allocated = (capitalNum * getPercent(i)) / 100;
     const quantity = allocated / entry;
     const profit = (close - entry) * quantity;
     const percentReturn = ((close - entry) / entry) * 100;
@@ -148,8 +176,8 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
       if (!hasValidStartingPrice) break;
       const price = calcEntryPrice(startingPriceNum, getBajada(i));
       if (!isNaN(price) && price > 0) {
-        sum += price * TRADES[i].percent;
-        totalWeight += TRADES[i].percent;
+        sum += price * getPercent(i);
+        totalWeight += getPercent(i);
       }
     }
     return totalWeight > 0 ? sum / totalWeight : 0;
@@ -161,8 +189,8 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
     for (let i = 0; i < trades.length; i++) {
       const price = parseFloat(trades[i].closePrice ?? '');
       if (!isNaN(price) && price > 0) {
-        sum += price * TRADES[i].percent;
-        totalWeight += TRADES[i].percent;
+        sum += price * getPercent(i);
+        totalWeight += getPercent(i);
       }
     }
     return totalWeight > 0 ? sum / totalWeight : 0;
@@ -176,7 +204,7 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
       const entry = calcEntryPrice(startingPriceNum, getBajada(i));
       const close = parseFloat(trades[i].closePrice ?? '');
       if (isNaN(entry) || entry <= 0 || isNaN(close) || close <= 0) continue;
-      const allocated = (capitalNum * TRADES[i].percent) / 100;
+      const allocated = (capitalNum * getPercent(i)) / 100;
       const quantity = allocated / entry;
       total += (close - entry) * quantity;
       hasAny = true;
@@ -195,9 +223,20 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
       : `-$${formatCurrency(Math.abs(totalProfit))}`;
   })();
 
+  const hasCustomValues = customDrops.some((v, i) => v !== TRADES[i].bajada.toString())
+    || customPercents.some((v, i) => v !== TRADES[i].percent.toString());
+
+  const handleReset = () => {
+    setCustomDrops(TRADES.map(t => t.bajada.toString()));
+    setCustomPercents(TRADES.map(t => t.percent.toString()));
+  };
+
   return (
     <div className="page">
       <Header />
+      {hasCustomValues && (
+        <button className="reset-btn" onClick={handleReset}>Reset</button>
+      )}
 
       <div className="inputs-row">
         <NumericField
@@ -228,6 +267,8 @@ export default function CalculatorPage({ onSaveComplete }: CalculatorPageProps) 
           startingPriceNum={startingPriceNum}
           customDrops={customDrops}
           onDropChange={handleDropChange}
+          customPercents={customPercents}
+          onPercentChange={handlePercentChange}
         />
       )}
 

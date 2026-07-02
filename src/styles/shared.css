@@ -144,13 +144,12 @@
 }
 
 .badge-input {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 600;
   font-family: var(--font-mono);
-  color: var(--red-badge);
+  color: inherit;
   background: none;
   border: none;
-  border-bottom: 1px solid rgba(239, 83, 80, 0.08);
   outline: none;
   padding: 0;
   width: auto;
